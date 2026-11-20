@@ -31,9 +31,9 @@ class AuthController extends Controller
  
         $request->session()->regenerate(); 
  
-        return $request->user()->role === 'admin' 
-            ? redirect()->route('admin.dashboard') 
-            : redirect()->intended(route('shop.index')); 
+        return $request->user()->role === 'admin'
+    ? redirect()->route('admin.categories.index')
+    : redirect()->intended(route('shop.index'));
     } 
  
     public function showRegister(): View 
