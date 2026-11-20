@@ -14,6 +14,8 @@ use App\Http\Controllers\ProductCatalogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerOrderController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 
 Route::middleware('guest')->group(function () { 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login'); 
@@ -31,6 +33,10 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        // M7 - Dashboard Admin
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // M2 - Master kategori dan produk
         Route::resource('categories', AdminCategoryController::class)
             ->except('show');
 
@@ -38,32 +44,37 @@ Route::middleware(['auth', 'role:admin'])
             ->except('show');
 
         // M3 - Barang masuk dan histori stok
-Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
-Route::get('/stock/create', [StockController::class, 'create'])->name('stock.create');
-Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
+        Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+        Route::get('/stock/create', [StockController::class, 'create'])->name('stock.create');
+        Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
 
-// M3 - Layanan ekspedisi
-Route::get('/shipping', [ShippingServiceController::class, 'index'])->name('shipping.index');
-Route::post('/shipping', [ShippingServiceController::class, 'store'])->name('shipping.store');
-Route::put('/shipping/{shippingService}', [ShippingServiceController::class, 'update'])->name('shipping.update');
-Route::delete('/shipping/{shippingService}', [ShippingServiceController::class, 'destroy'])->name('shipping.destroy');
+        // M3 - Layanan ekspedisi
+        Route::get('/shipping', [ShippingServiceController::class, 'index'])->name('shipping.index');
+        Route::post('/shipping', [ShippingServiceController::class, 'store'])->name('shipping.store');
+        Route::put('/shipping/{shippingService}', [ShippingServiceController::class, 'update'])->name('shipping.update');
+        Route::delete('/shipping/{shippingService}', [ShippingServiceController::class, 'destroy'])->name('shipping.destroy');
+
+        // M7 - Transaksi Admin
+        Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/confirm', [AdminOrderController::class, 'confirm'])->name('orders.confirm');
+        Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
+        Route::patch('/orders/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('orders.cancel');
     });
 
-Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::middleware(['auth', 'role:customer'])->group(function () {
     // M5 - Keranjang
     Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
     Route::post('/keranjang/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/keranjang/{product}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/keranjang/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
-    
-      // M6 - Checkout dan pesanan
+
+    // M6 - Checkout dan pesanan
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
     Route::get('/pesanan', [CustomerOrderController::class, 'index'])->name('orders.index');
     Route::get('/pesanan/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
 });
-
-
       
 
