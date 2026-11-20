@@ -37,8 +37,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         // M2 - Master kategori dan produk
-        Route::resource('categories', AdminCategoryController::class)
-            ->except('show');
+        Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 
         Route::resource('products', AdminProductController::class)
             ->except('show');
